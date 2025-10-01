@@ -3,105 +3,58 @@ from tkinter import ttk, messagebox
 
 # ------------------ Appliance Data ------------------
 
+microwave = {
+    "Countertop": """Cost: $50 to $300
+Watts: 700 to 1200 watts
+Buy If: You don't want installation.
+Don't Buy If: You have a cramped kitchen.""",
+
+    "Over-the-Range": "Watts: 600 to 1,700 watts",
+    "Drawer": "Watts: 900 to 1750 watts",
+    "Built-In": "Watts: 700 to 1200 watts"
+}
+
+stove = {
+    "Gas:": "Fuel Burn: 5,000 to 18,000 BTUs\nCapacity: 5,000 to 18,000 BTUs",
+    "Electric": "Electricity Consumption: 6000 to 8000 watts",
+    "Convection": "Energy Consumption: 2,500 to 3,000 watts"
+}
+
 washing_machines = {
-    "front-load washers": """Cost: $650-$2200
-Wash Times: 65-120 minutes
-Capacity: 5.8 cubic feet
+    "front-load washers": "Water Usage: 7 gallons of water per load",
+    "top-load agitator washers": "Water Usage: 30 to 45 gallons per load",
+    "high-efficiency top load washers": "Water Usage: 12 to 17 gallons per load",
+    "compact front-load washers": "Water Usage: 7 to 15 gallons per load",
+    "all-in one-washer dryers": "Water Usage: 55 gallons per dry cycle"
+}
 
-Buy If:
-- You want to use 10 gallons of water per load
-- You have gentle fabrics
-- You want shorter drying time
-
-Don't Buy If:
-- You're worried about long wash time and mold
-""",
-    "top-load agitator washers": """Cost: $380-$1600
-Wash Times: 35-105 minutes
-Capacity: 5.4 cubic feet
-
-Buy If:
-- It's more affordable
-- You want shorter wash cycles
-
-Don't Buy If:
-- Your fabrics are delicate
-- You can't afford 20 gallons per load of water
-""",
-    "high-efficiency top load washers": """Price: $515-$1200
-Wash Times: 35-105 minutes
-Capacity: 5.5 cubic feet
-
-Buy If:
-- You want excellent performance
-- You want to save water (13 gallons/load)
-
-Cons:
-- High spin speeds may tangle clothes
-- Longer wash times than agitators
-""",
-    "compact front-load washers": """Price: $630-$2450
-Wash Times: 60-100 minutes
-Capacity: 2.7 cubic feet
-
-Pros:
-- Efficient for water/energy
-- Good for small spaces
-
-Cons:
-- Longer wash time
-- More vibration
-""",
-    "all-in one-washer dryers": """Price: $1390-$2050
-
-Pros:
-- Excellent energy/water efficiency
-- Good wash performance
-
-Don't Buy If:
-- You want fast drying
-- You need a smaller machine
-"""
+dishwasher = {
+    "Built-In(Under_Counter)": "Energy Consumption: 1,200 to 2,400 watts per cycle",
+    "Countertop": "Energy Consumption: 100 to 500 watts",
+    "Drawer": "Energy Consumption: 1,200 to 2,400 watts"
 }
 
 refrigerators = {
-    "french-refrigerator": """French refrigerators are useful for 36-inch fridge needs.
+    "french-refrigerator": "Energy Consumption: 400 to 700 watts",
+    "Top-Freezer": "Energy Consumption: 100 to 400 watts",
+    "Side by side": "Energy Consumption: 100 to 1000 watts",
+    "Bottom-Freezer": "Energy Consumption: 100 to 500 watts"
+}
 
-Ergonomics:
-- Produce is at knee level
-- Flexible shelving (pizza boxes, sheet pans)
+blenders = {
+    "Counter": "300 to over 1,000 watts",
+    "Immersion": "Light-Duty: 150 to 300 watts\nHeavy-Duty: 500 to 1000 watts",
+    "Personal": "250 watts to 1000 watts"
+}
 
-Mobility:
-- Half-width doors are easier to open
-
-Don't Buy If:
-- You want better capacity or features
-- You need frequent access to lower compartments
-- You want a second ice maker
-""",
-    "side-by-side": """Side-by-side fridges are good if:
-- You want balanced access to fridge/freezer
-- You want more shelving space
-- You want a 36-inch fridge on a budget
-
-Don't Buy If:
-- You store wide items like casserole dishes
-- You care about energy efficiency
-""",
-    "bottom-freezer": """Bottom-freezer models are good if:
-- You want flexible storage
-- You want a cheaper alternative to French door
-- You don’t want to bend for produce
-
-Skip if:
-- You need visible produce
-- You want ice/water dispensers
-""",
-    "top-freezer": """Top-freezer fridges are ideal if:
-- You want an affordable and reliable option
-- You want mechanical, low-maintenance controls
-- You want high efficiency
-"""
+# Unified appliance data
+appliance_data = {
+    "Washing Machine": washing_machines,
+    "Dish Washer": dishwasher,
+    "Refrigerator": refrigerators,
+    "Microwave": microwave,
+    "Stove": stove,
+    "Blender": blenders
 }
 
 # ------------------ GUI Application ------------------
@@ -109,73 +62,66 @@ Skip if:
 class ApplianceApp:
     def __init__(self, root):
         self.root = root
-        #following method creates the title for the pop up
         self.root.title("Household Appliance Selector")
-        #sets the windows
-        self.root.geometry("700x500")
-        
+        self.root.geometry("700x550")
+
         # Appliance Type Dropdown
-        self.appliance_label = ttk.Label(root, text="Select Appliance Type:")
-        self.appliance_label.pack(pady=10)
-        #creates the pop up as string
+        ttk.Label(root, text="Select Appliance Type:").pack(pady=10)
         self.appliance_type = tk.StringVar()
         self.appliance_dropdown = ttk.Combobox(root, textvariable=self.appliance_type, state="readonly")
-        #tells python to set the values equal to the washing machine and refrigerator
-        self.appliance_dropdown['values'] = ["Washing Machine", "Refrigerator"]
-        #Creates the drop down functionality
+        self.appliance_dropdown['values'] = list(appliance_data.keys())
         self.appliance_dropdown.pack()
-
-        #Contnusoly updates the drop down animation
         self.appliance_dropdown.bind("<<ComboboxSelected>>", self.update_appliance_options)
 
-        # Appliance Subtype Dropdown
-        self.type_label = ttk.Label(root, text="Select Appliance Model:")
-        self.type_label.pack(pady=10)
-        #creates the drop down variable as a string 
+        # Appliance Model Dropdown
+        ttk.Label(root, text="Select Appliance Model:").pack(pady=10)
         self.sub_type = tk.StringVar()
         self.type_dropdown = ttk.Combobox(root, textvariable=self.sub_type, state="readonly")
         self.type_dropdown.pack()
 
-        # Creates the button, when clicked shows all the details dependent on the self.appliance.drop() functionality respectfully 
-        self.show_button = ttk.Button(root, text="Show Details", command=self.show_details)
-        self.show_button.pack(pady=20)
+        # Brand Input
+        ttk.Label(root, text="Enter Brand Name:").pack(pady=10)
+        self.brand_var = tk.StringVar()
+        self.brand_entry = ttk.Entry(root, textvariable=self.brand_var)
+        self.brand_entry.pack()
 
-        # Text Display
+        # Show Details Button
+        ttk.Button(root, text="Show Details", command=self.show_details).pack(pady=20)
+
+        # Result Display
         self.result_text = tk.Text(root, height=15, width=80, wrap=tk.WORD)
         self.result_text.pack(padx=10, pady=10)
 
     def update_appliance_options(self, event):
-        
-        """ 
-        When the Washing Machine option is selected, the type_drop down values will be associated with the various washing machines you can select.
-        """
         selected = self.appliance_type.get()
-        if selected == "Washing Machine":
-            self.type_dropdown['values'] = list(washing_machines.keys())
-        elif selected == "Refrigerator":
-            self.type_dropdown['values'] = list(refrigerators.keys())
-        self.sub_type.set("")  # Clear selection
         self.result_text.delete("1.0", tk.END)
 
-    def show_details(self): 
-        
-        """Accesses the appliance types and there variants, 
-           
-        """
+        if selected in appliance_data:
+            self.type_dropdown['values'] = list(appliance_data[selected].keys())
+            self.sub_type.set("")  # Reset model
+
+    def show_details(self):
         selected_type = self.appliance_type.get()
         selected_model = self.sub_type.get()
+        brand = self.brand_var.get().strip()
 
         if not selected_type or not selected_model:
             messagebox.showerror("Input Error", "Please select both appliance type and model.")
             return
+        if not brand:
+            messagebox.showerror("Input Error", "Please enter a valid brand.")
+            return
 
-        if selected_type == "Washing Machine":
-            info = washing_machines.get(selected_model, "No data found.")
-        else:
-            info = refrigerators.get(selected_model, "No data found.")
+        info = appliance_data.get(selected_type, {}).get(selected_model, "No data found.")
 
         self.result_text.delete("1.0", tk.END)
-        self.result_text.insert(tk.END, info)
+        display_text = (
+            f"Brand: {brand}\n"
+            f"Appliance Type: {selected_type}\n"
+            f"Model: {selected_model}\n\n"
+            f"Details:\n{info}"
+        )
+        self.result_text.insert(tk.END, display_text)
 
 # ------------------ Run the App ------------------
 
@@ -183,5 +129,4 @@ if __name__ == "__main__":
     root = tk.Tk()
     app = ApplianceApp(root)
     root.mainloop()
-
 
